@@ -66,11 +66,9 @@ public class GroupSelectorTests {
 
         myTestNG.run();
 
-        assertThat("We should have no failed methods", tla.getFailedTests().size(),
-                is(equalTo(0)));
+        assertThat("We should have no failed methods", tla.getFailedTests().size(), is(equalTo(0)));
 
-        assertThat("We should have no failed methods", tla.getPassedTests().size(),
-                is(equalTo(1)));
+        assertThat("We should have no failed methods", tla.getPassedTests().size(), is(equalTo(1)));
 
         assertThat("We should have 1 successful methods",
                 tla.getPassedTests().stream()
@@ -105,11 +103,9 @@ public class GroupSelectorTests {
 
         myTestNG.run();
 
-        assertThat("We should have no failed methods", tla.getFailedTests().size(),
-                is(equalTo(0)));
+        assertThat("We should have no failed methods", tla.getFailedTests().size(), is(equalTo(0)));
 
-        assertThat("We should have two successsful methods", tla.getPassedTests().size(),
-                is(equalTo(2)));
+        assertThat("We should have two successsful methods", tla.getPassedTests().size(), is(equalTo(2)));
 
         assertThat("We should have 1 successful methods",
                 tla.getPassedTests().stream()
@@ -117,7 +113,7 @@ public class GroupSelectorTests {
                         .collect(Collectors.toList()).size(),
                 is(equalTo(2)));
     }
-    
+
     @Test
     public void testNormalTestClass_packageIncludesNestedTestClass() {
 
@@ -144,11 +140,9 @@ public class GroupSelectorTests {
 
         myTestNG.run();
 
-        assertThat("We should have no failed methods", tla.getFailedTests().size(),
-                is(equalTo(0)));
+        assertThat("We should have no failed methods", tla.getFailedTests().size(), is(equalTo(0)));
 
-        assertThat("We should have two successsful methods", tla.getPassedTests().size(),
-                is(equalTo(2)));
+        assertThat("We should have two successsful methods", tla.getPassedTests().size(), is(equalTo(2)));
 
         assertThat("We should have 1 successful methods",
                 tla.getPassedTests().stream()
@@ -160,7 +154,8 @@ public class GroupSelectorTests {
     @Test
     public void testNestedTestClass_packageIncludesNormalTestClasses() {
 
-        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3", "extnest");
+        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3",
+                "extnest");
 
         // Rampup
         TestNG myTestNG = createTestNG();
@@ -178,17 +173,16 @@ public class GroupSelectorTests {
 
         //Define packages
         List<XmlPackage> l_packages = new ArrayList<>();
-        l_packages.add(new XmlPackage("my.tests.data"));
-        
+        l_packages.add(new XmlPackage("my.tests.data.normal"));
+        l_packages.add(new XmlPackage("my.tests.data.nested"));
+
         myTest.setXmlPackages(l_packages);
 
         myTestNG.run();
 
-        assertThat("We should have no failed methods", tla.getFailedTests().size(),
-                is(equalTo(0)));
+        assertThat("We should have no failed methods", tla.getFailedTests().size(), is(equalTo(0)));
 
-        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(),
-                is(equalTo(2)));
+        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(), is(equalTo(2)));
 
         assertThat("We should have 1 successful methods",
                 tla.getPassedTests().stream()
@@ -196,12 +190,12 @@ public class GroupSelectorTests {
                         .collect(Collectors.toList()).size(),
                 is(equalTo(2)));
     }
-    
-    
+
     @Test
     public void testNestedTestClass_allAlone() {
 
-        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3", "extnest");
+        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3",
+                "extnest");
 
         // Rampup
         TestNG myTestNG = createTestNG();
@@ -220,16 +214,14 @@ public class GroupSelectorTests {
         //Define packages
         List<XmlPackage> l_packages = new ArrayList<>();
         l_packages.add(new XmlPackage("my.tests.data.nested"));
-        
+
         myTest.setXmlPackages(l_packages);
 
         myTestNG.run();
 
-        assertThat("We should have no failed methods", tla.getFailedTests().size(),
-                is(equalTo(0)));
+        assertThat("We should have no failed methods", tla.getFailedTests().size(), is(equalTo(0)));
 
-        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(),
-                is(equalTo(2)));
+        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(), is(equalTo(2)));
 
         assertThat("We should have 1 successful methods",
                 tla.getPassedTests().stream()
@@ -237,12 +229,12 @@ public class GroupSelectorTests {
                         .collect(Collectors.toList()).size(),
                 is(equalTo(2)));
     }
-    
-    
+
     @Test
     public void testNestedTestClass_withTestContainingGroup() {
 
-        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3", "extnest");
+        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3",
+                "extnest");
 
         // Rampup
         TestNG myTestNG = createTestNG();
@@ -262,16 +254,53 @@ public class GroupSelectorTests {
         List<XmlPackage> l_packages = new ArrayList<>();
         l_packages.add(new XmlPackage("my.tests.data.nested"));
         l_packages.add(new XmlPackage("my.tests.data.withgroup"));
-        
+
         myTest.setXmlPackages(l_packages);
 
         myTestNG.run();
 
-        assertThat("We should have no failed methods", tla.getFailedTests().size(),
-                is(equalTo(0)));
+        assertThat("We should have no failed methods", tla.getFailedTests().size(), is(equalTo(0)));
 
-        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(),
+        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(), is(equalTo(2)));
+
+        assertThat("We should have 1 successful methods",
+                tla.getPassedTests().stream()
+                        .filter(m -> m.getInstance().getClass().equals(NonGroupClass3.class))
+                        .collect(Collectors.toList()).size(),
                 is(equalTo(2)));
+    }
+
+    @Test
+    public void testNestedTestClass_idealSolution() {
+
+        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3",
+                "extnest");
+
+        // Rampup
+        TestNG myTestNG = createTestNG();
+        TestListenerAdapter tla = fetchTestResultsHandler(myTestNG);
+
+        // Define suites
+        XmlSuite mySuite = addSuitToTestNGTest(myTestNG, "Automated Suite External Group Checks Testing");
+
+        // Add listeners
+        mySuite.addListener("my.tests.ExternalGroupManager");
+
+        // Create an instance of XmlTest and assign a name for it.
+        XmlTest myTest = attachTestToSuite(mySuite, "Test Simple External Group Checks Tests");
+        myTest.addIncludedGroup("extnest");
+
+        //Define packages
+        List<XmlPackage> l_packages = new ArrayList<>();
+        l_packages.add(new XmlPackage("my.tests.data.*"));
+
+        myTest.setXmlPackages(l_packages);
+
+        myTestNG.run();
+
+        assertThat("We should have no failed methods", tla.getFailedTests().size(), is(equalTo(0)));
+
+        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(), is(equalTo(2)));
 
         assertThat("We should have 1 successful methods",
                 tla.getPassedTests().stream()

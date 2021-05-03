@@ -22,8 +22,8 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import my.tests.data.*;
-import my.tests.dataWithNested.ClassContainer.NonGroupClass3;
+import my.tests.data.nested.ClassContainer.NonGroupClass3;
+import my.tests.data.normal.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -43,7 +43,7 @@ public class GroupSelectorTests {
     @Test
     public void testNormalTestMethod() {
 
-        ExternalGroupManager.addGroupDefinition("my.tests.data.NonGroupClass1.step1", "extnest");
+        ExternalGroupManager.addGroupDefinition("my.tests.data.normal.NonGroupClass1.step1", "extnest");
 
         // Rampup
         TestNG myTestNG = createTestNG();
@@ -61,7 +61,7 @@ public class GroupSelectorTests {
 
         //Define packages
         List<XmlPackage> l_packages = new ArrayList<>();
-        l_packages.add(new XmlPackage("my.tests.data"));
+        l_packages.add(new XmlPackage("my.tests.data.*"));
         myTest.setXmlPackages(l_packages);
 
         myTestNG.run();
@@ -82,7 +82,7 @@ public class GroupSelectorTests {
     @Test
     public void testNormalTestClass() {
 
-        ExternalGroupManager.addGroupDefinition("my.tests.data.NonGroupClass2", "extnest");
+        ExternalGroupManager.addGroupDefinition("my.tests.data.normal.NonGroupClass2", "extnest");
 
         // Rampup
         TestNG myTestNG = createTestNG();
@@ -100,7 +100,7 @@ public class GroupSelectorTests {
 
         //Define packages
         List<XmlPackage> l_packages = new ArrayList<>();
-        l_packages.add(new XmlPackage("my.tests.data"));
+        l_packages.add(new XmlPackage("my.tests.data.normal"));
         myTest.setXmlPackages(l_packages);
 
         myTestNG.run();
@@ -121,7 +121,7 @@ public class GroupSelectorTests {
     @Test
     public void testNormalTestClass_packageIncludesNestedTestClass() {
 
-        ExternalGroupManager.addGroupDefinition("my.tests.data.NonGroupClass2", "extnest");
+        ExternalGroupManager.addGroupDefinition("my.tests.data.normal.NonGroupClass2", "extnest");
 
         // Rampup
         TestNG myTestNG = createTestNG();
@@ -139,9 +139,7 @@ public class GroupSelectorTests {
 
         //Define packages
         List<XmlPackage> l_packages = new ArrayList<>();
-        l_packages.add(new XmlPackage("my.tests.data"));
-        
-        l_packages.add(new XmlPackage("my.tests.dataWithNested"));
+        l_packages.add(new XmlPackage("my.tests.data.*"));
         myTest.setXmlPackages(l_packages);
 
         myTestNG.run();
@@ -162,7 +160,7 @@ public class GroupSelectorTests {
     @Test
     public void testNestedTestClass_packageIncludesNormalTestClasses() {
 
-        ExternalGroupManager.addGroupDefinition("my.tests.dataWithNested.ClassContainer$NonGroupClass3", "extnest");
+        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3", "extnest");
 
         // Rampup
         TestNG myTestNG = createTestNG();
@@ -181,8 +179,89 @@ public class GroupSelectorTests {
         //Define packages
         List<XmlPackage> l_packages = new ArrayList<>();
         l_packages.add(new XmlPackage("my.tests.data"));
+        
+        myTest.setXmlPackages(l_packages);
 
-        l_packages.add(new XmlPackage("my.tests.dataWithNested"));
+        myTestNG.run();
+
+        assertThat("We should have no failed methods", tla.getFailedTests().size(),
+                is(equalTo(0)));
+
+        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(),
+                is(equalTo(2)));
+
+        assertThat("We should have 1 successful methods",
+                tla.getPassedTests().stream()
+                        .filter(m -> m.getInstance().getClass().equals(NonGroupClass3.class))
+                        .collect(Collectors.toList()).size(),
+                is(equalTo(2)));
+    }
+    
+    
+    @Test
+    public void testNestedTestClass_allAlone() {
+
+        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3", "extnest");
+
+        // Rampup
+        TestNG myTestNG = createTestNG();
+        TestListenerAdapter tla = fetchTestResultsHandler(myTestNG);
+
+        // Define suites
+        XmlSuite mySuite = addSuitToTestNGTest(myTestNG, "Automated Suite External Group Checks Testing");
+
+        // Add listeners
+        mySuite.addListener("my.tests.ExternalGroupManager");
+
+        // Create an instance of XmlTest and assign a name for it.
+        XmlTest myTest = attachTestToSuite(mySuite, "Test Simple External Group Checks Tests");
+        myTest.addIncludedGroup("extnest");
+
+        //Define packages
+        List<XmlPackage> l_packages = new ArrayList<>();
+        l_packages.add(new XmlPackage("my.tests.data.nested"));
+        
+        myTest.setXmlPackages(l_packages);
+
+        myTestNG.run();
+
+        assertThat("We should have no failed methods", tla.getFailedTests().size(),
+                is(equalTo(0)));
+
+        assertThat("We should have 2 succesdul tests", tla.getPassedTests().size(),
+                is(equalTo(2)));
+
+        assertThat("We should have 1 successful methods",
+                tla.getPassedTests().stream()
+                        .filter(m -> m.getInstance().getClass().equals(NonGroupClass3.class))
+                        .collect(Collectors.toList()).size(),
+                is(equalTo(2)));
+    }
+    
+    
+    @Test
+    public void testNestedTestClass_withTestContainingGroup() {
+
+        ExternalGroupManager.addGroupDefinition("my.tests.data.nested.ClassContainer$NonGroupClass3", "extnest");
+
+        // Rampup
+        TestNG myTestNG = createTestNG();
+        TestListenerAdapter tla = fetchTestResultsHandler(myTestNG);
+
+        // Define suites
+        XmlSuite mySuite = addSuitToTestNGTest(myTestNG, "Automated Suite External Group Checks Testing");
+
+        // Add listeners
+        mySuite.addListener("my.tests.ExternalGroupManager");
+
+        // Create an instance of XmlTest and assign a name for it.
+        XmlTest myTest = attachTestToSuite(mySuite, "Test Simple External Group Checks Tests");
+        myTest.addIncludedGroup("extnest");
+
+        //Define packages
+        List<XmlPackage> l_packages = new ArrayList<>();
+        l_packages.add(new XmlPackage("my.tests.data.nested"));
+        l_packages.add(new XmlPackage("my.tests.data.withgroup"));
         
         myTest.setXmlPackages(l_packages);
 

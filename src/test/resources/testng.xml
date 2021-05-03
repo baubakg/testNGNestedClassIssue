@@ -7,7 +7,7 @@
         
         <packages>
             <package
-                name="my.tests" />
+                name="my.tests.*" />
         </packages>
     </test>
 </suite> <!-- Default suite -->
